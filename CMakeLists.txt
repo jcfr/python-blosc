@@ -1,0 +1,20 @@
+cmake_minimum_required(VERSION 3.11.0)
+project(hello)
+find_package(PythonExtensions REQUIRED)
+
+if(EXIST ${BLOSC_DIR})
+  # TODO Find lib and include dir, then add imported target
+  set(blosc_libname )
+else()
+  set(CMAKE_POSITION_INDEPENDENT_CODE 1)
+  set(BUILD_SHARED OFF)
+  set(BUILD_TESTS OFF)
+  set(BUILD_BENCHMARKS OFF)
+  add_subdirectory(c-blosc)
+  set(blosc_libname blosc_static)
+endif()
+
+add_library(blosc_extension MODULE blosc/blosc_extension.c)
+python_extension_module(blosc_extension)
+target_link_libraries(blosc_extension ${blosc_libname})
+install(TARGETS blosc_extension LIBRARY DESTINATION blosc)
